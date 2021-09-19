@@ -115,6 +115,7 @@ int main() {
 			printf("The description: ");
 			cin >> des;
 
+			r.push_back((record) { amount, tag, des, today });
 			fout << today.year << ' ' << today.month << ' ' <<
 				today.day << ' ' << amount <<
 				" " + tag + " " + des + '\n';
