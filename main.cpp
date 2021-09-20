@@ -41,7 +41,7 @@ struct Date {
 		else return b < *this;
 	}
 
-	Date operator ++ () {
+	void operator ++ () {
 		if (day == Days()) {
 			day = 1;
 			if (month == 12)
@@ -50,7 +50,7 @@ struct Date {
 		} else ++day;
 	}
 
-	Date operator -- () {
+	void operator -- () {
 		if (day == 1) {
 			if (month == 1)
 				--year, month = 12;
@@ -89,6 +89,7 @@ void get_r() {
 Date today;
 
 int main() {
+	get_r();
 	while (true) {
 		printf(">>");
 		string order;
@@ -123,8 +124,6 @@ int main() {
 		}
 
 		if (order == "query") {
-			if (r.empty()) get_r();
-
 			string type;
 			cin >> type;
 
