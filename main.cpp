@@ -84,7 +84,7 @@ vector<record> r;
 Date today, free_st;
 float Free;
 
-void get_today() {
+void GetToday() {
 	time_t now = time(0);
 	tm *ltm = localtime(&now);
 	today.year = 1900 + ltm->tm_year;
@@ -92,6 +92,7 @@ void get_today() {
 	today.day = ltm->tm_mday;
 }
 
+// {{{ get and check
 void get_f() {
 	ifstream fin;
 	fin.open("data/free.dat");
@@ -109,10 +110,42 @@ void get_r() {
 	string t, des;
 	while (fin >> y >> m >> d >> a >> t >> des) {
 		r.push_back((record) { a, t, des, (Date) { y, m, d }});
-		Free -= a;
+		if ((Date) { y, m, d } > free_st) Free -= a;
 	}
 	return void();
 }
+
+void CheckConvention() {
+	ifstream fin;
+	fin.open("data/convention.dat");
+	Date st; int a;
+	fin >> st.year >> st.month >> st.day >> a;
+
+	int d = today - st;
+	if (1 < a / 50 - d && a / 50 - d <= 3)
+		printf("Convention: %d days left!\n", a / 50 - d);
+	if (a / 50 <= 1)
+		puts("Convention: used up!");
+}
+// }}}
+
+// {{{ set
+void SetConvention(Date d, int a) {
+	ofstream fout;
+	fout.open("data/convention.dat");
+	fout << d.year << ' ' << d.month << ' ' << d.day << '\n';
+	fout << a << '\n';
+	return void();
+}
+
+void SetFree(Date d, float f) {
+	ofstream fout;
+	fout.open("data/free.dat");
+	fout << d.year << ' ' << d.month << ' ' << d.day << '\n';
+	fout << f << '\n';
+	return void();
+}
+//}}}
 
 // {{{ input and output and print a record
 record input_a_record(bool is_today = false) {
@@ -149,10 +182,15 @@ void print_a_record(record a) {
 }
 // }}}
 
-int main() {
-	get_today();
+void init() {
+	GetToday();
 	get_f();
 	get_r();
+	CheckConvention();
+}
+
+int main() {
+	init();
 
 	while (true) {
 		printf(">>");
@@ -179,6 +217,7 @@ int main() {
 			string type;
 			cin >> type;
 
+			// {{{ time
 			if (type == "time") {
 				int limit;
 				cin >> limit;
@@ -206,8 +245,19 @@ int main() {
 					printf("today : cost %.2f¥ totally\n", sum);
 				else printf("%d.%d.%d : cost %.2f¥ totally\n",
 						now.year, now.month, now.day, sum);
-			} else if (type == "free")
+			}
+			// }}}
+
+			else if (type == "free")
 				printf("%.2f\n",  Free);
+			else if (type == "convention") {
+				ifstream fin;
+				fin.open("data/convention.dat");
+				Date st; int a;
+				fin >> st.year >> st.month >> st.day >> a;
+				int d = today - st;
+				printf("%d days left\n", a / 50 - d);
+			}
 
 			else if (type == "list") {
 				for (auto re : r) {
@@ -215,11 +265,25 @@ int main() {
 					else print_a_record(re);
 				}
 			}
+
 		}
 		// }}}
 
 		if (order == "free")
 			printf("%.2f\n",  Free);
+
+		if (order == "add_free") {
+			printf("amount: ");
+			float a; cin >> a;
+			Free += a;
+			Date yesterday = today; --yesterday;
+			SetFree(yesterday, Free + 50);
+		}
+
+		if (order == "set_convention") {
+			int a; cin >> a;
+			SetConvention(today, a);
+		}
 	}
 
 	return 0;
