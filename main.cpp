@@ -166,9 +166,9 @@ record input_a_record(bool is_today = false) {
 	return (record) { amount, tag, des, d };
 }
 
-void output_a_record(record a) {
+void output_a_record(record a, string pos = "data/record.dat") {
 	ofstream fout;
-	fout.open("data/record.dat", ios::app);
+	fout.open(pos, ios::app);
 	fout << a.date.year << ' ' << a.date.month << ' ' <<
 		a.date.day << ' ' << a.amount <<
 		" " + a.tag + " " + a.des + '\n';
@@ -181,6 +181,12 @@ void print_a_record(record a) {
 		" " + a.tag + " " + a.des + '\n';
 }
 // }}}
+
+void MakeABackup() {
+	system("cp data/record.dat data/.record.dat.back");
+	system("cp data/convention.dat data/.convention.dat.back");
+	system("cp data/free.dat data/.free.dat.back");
+}
 
 void init() {
 	GetToday();
@@ -197,8 +203,10 @@ int main() {
 		string order;
 		cin >> order;
 
-		if (order == "quit" or order == "q")
+		if (order == "quit" or order == "q") {
+			MakeABackup();
 			return 0;
+		}
 
 		if (order == "add") {
 			record tmp = input_a_record(true);
@@ -283,6 +291,14 @@ int main() {
 		if (order == "set_convention") {
 			int a; cin >> a;
 			SetConvention(today, a);
+		}
+
+		if (order == "sort") {
+			sort(r.begin(), r.end());
+			system("touch data/record.tmp");
+			for (auto re : r)
+				output_a_record(re, "data/record.tmp");
+			system("mv data/record.tmp data/record.dat");
 		}
 	}
 
