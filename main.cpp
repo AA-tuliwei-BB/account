@@ -6,6 +6,8 @@ using namespace std;
 struct Date {
 	int year, month, day;
 
+	void input() { cin >> year >> month >> day; }
+
 	bool IsLeapYear() {
 		if (year % 4 == 0 and year % 100) return true;
 		if (year % 400 == 0) return true;
@@ -81,7 +83,8 @@ struct record {
 // }}}
 
 vector<record> r;
-Date today, free_st;
+Date today, free_st, SetDay;
+bool SetDayFlag;
 float Free;
 
 void GetToday() {
@@ -215,7 +218,18 @@ int main() {
 		}
 
 		if (order == "add_") {
-			record tmp = input_a_record();
+			record tmp;
+			if (SetDayFlag) {
+				float amount;
+				string tag, des;
+				printf("amount: ");
+				cin >> amount;
+				printf("tag: ");
+				cin >> tag;
+				printf("des: ");
+				cin >> des;
+				tmp = (record) { amount, tag, des, SetDay };
+			} else tmp = input_a_record();
 			output_a_record(tmp);
 			r.push_back(tmp);
 		}
@@ -279,6 +293,12 @@ int main() {
 
 		if (order == "free")
 			printf("%.2f\n",  Free);
+
+		if (order == "set_day") {
+			printf("The date: ");
+			SetDay.input();
+			SetDayFlag = true;
+		}
 
 		if (order == "add_free") {
 			printf("amount: ");
