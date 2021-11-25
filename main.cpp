@@ -252,14 +252,14 @@ int main() {
 				for (int i = 1; i < limit; ++i) --st;
 				now = st;
 
-				float sum = 0;
+				float sum = 0, Sum = 0;
 				sort(r.begin(), r.end());
 				for (auto re : r) {
 					if (re.date < st) continue;
 					if (re.date > now) {
 						printf("%d.%d.%d : cost %.2f¥ totally\n",
 								now.year, now.month, now.day, sum);
-						sum = 0, now = re.date;
+						Sum += sum, sum = 0, now = re.date;
 					}
 					sum += re.amount;
 				}
@@ -267,6 +267,8 @@ int main() {
 					printf("today : cost %.2f¥ totally\n", sum);
 				else printf("%d.%d.%d : cost %.2f¥ totally\n",
 						now.year, now.month, now.day, sum);
+				Sum += sum;
+				printf("total: %.2f¥\n", Sum);
 			}
 			// }}}
 
