@@ -272,6 +272,19 @@ int main() {
 			}
 			// }}}
 
+			else if (type == "month") {
+				int y, m;
+				float sum = 0;
+				printf("Year and month: ");
+				cin >> y >> m;
+				for (auto re : r) {
+					Date d = re.date;
+					if (d.year == y and d.month == m)
+						sum += re.amount;
+				}
+				printf("%.2f\n", sum);
+			}
+
 			else if (type == "free")
 				printf("%.2f\n",  Free);
 			else if (type == "convention") {
@@ -304,10 +317,13 @@ int main() {
 
 		if (order == "add_free") {
 			printf("amount: ");
-			float a; cin >> a;
-			Free += a;
+			float a, tmp; cin >> a;
+			Free += a, tmp = Free;
 			Date yesterday = today; --yesterday;
-			SetFree(yesterday, Free + 50);
+			for (auto re : r)
+				if (re.date == today)
+					tmp += re.amount;
+			SetFree(yesterday, tmp - 50);
 		}
 
 		if (order == "set_convention") {
